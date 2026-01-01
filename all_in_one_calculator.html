@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6366f1">
+    <title>All-in-One Calculator Suite</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.3s;
+        }
+
+        body.dark {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        body.dark .container {
+            background: rgba(30, 30, 45, 0.95);
+            color: #fff;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9em;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(180deg);
+        }
+
+        .nav-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 20px;
+            background: rgba(0,0,0,0.05);
+        }
+
+        body.dark .nav-buttons {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .nav-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            color: #6366f1;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        body.dark .nav-btn {
+            background: rgba(99, 102, 241, 0.2);
+            color: #fff;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .calculator-section {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.3s;
+        }
+
+        .calculator-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        body.dark label {
+            color: #ccc;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        body.dark input, body.dark select {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .date-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.5fr;
+            gap: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border-radius: 12px;
+            border-left: 4px solid #6366f1;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result h3 {
+            color: #6366f1;
+            margin-bottom: 10px;
+        }
+
+        body.dark .result h3 {
+            color: #818cf8;
+        }
+
+        .result p {
+            margin: 8px 0;
+            font-size: 0.95em;
+        }
+
+        .history-section {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .history-item {
+            background: rgba(99, 102, 241, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #6366f1;
+            position: relative;
+        }
+
+        body.dark .history-item {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .history-item .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .history-item .delete-btn:hover {
+            background: #dc2626;
+        }
+
+        .days-remaining {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .days-high {
+            background: #10b981;
+            color: white;
+        }
+
+        .days-medium {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .days-low {
+            background: #ef4444;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            padding: 10px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid #6366f1;
+            color: #6366f1;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+
+        body.dark .action-buttons button {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            border-color: #818cf8;
+        }
+
+        .action-buttons button:hover {
+            background: #6366f1;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .nav-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                border-radius: 0;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="light">
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+            <h1>🧮 Calculator Suite</h1>
+            <p>Your All-in-One Calculation Tool</p>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="nav-btn active" onclick="showSection('age')">📅 Age</button>
+            <button class="nav-btn" onclick="showSection('phone')">📱 Phone</button>
+            <button class="nav-btn" onclick="showSection('wifi')">📶 WiFi</button>
+        </div>
+
+        <!-- Age Calculator -->
+        <div class="calculator-section active" id="age-section">
+            <h2 style="margin-bottom: 20px; color: #6366f1;">📅 Age Calculator</h2>
+            
+            <div class="form-group">
+                <label>Birth Date:</label>
+                <div class="date-inputs">
+                    <input type="number" id="age-day" placeholder="Day" min="1" max="31">
+                    <input type="number" id="age-month" placeholder="Month" min="1" max="12">
+                    <input type="number" id="age-year" placeholder="Year" min="1900" max="2025">
+                </div>
+            </div>
+
+            <button class="btn" onclick="calculateAge()">Calculate Age</button>
+            
+            <div class="result" id="age-result"></div>
+        </div>
+
+        <!-- Phone Recharge Calculator -->
+        <div class="calculator-section" id="phone-section">
+            <h2 style="margin-bottom: 20px; color: #6366f1;">📱 Phone Recharge</h2>
+            
+            <div class="form-group">
+                <label>Name/Number:</label>
+                <input type="text" id="phone-name" placeholder="Enter name or phone number">
+            </div>
+
+            <div class="form-group">
+                <label>Recharge Date:</label>
+                <div class="date-inputs">
+                    <input type="number" id="phone-day" placeholder="Day" min="1" max="31">
+                    <input type="number" id="phone-month" placeholder="Month" min="1" max="12">
+                    <input type="number" id="phone-year" placeholder="Year" min="2020" max="2030">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Validity (days):</label>
+                <input type="number" id="phone-validity" placeholder="Enter validity in days" min="1">
+            </div>
+
+            <button class="btn" onclick="calculateRecharge('phone')">Calculate Expiry</button>
+            
+            <div class="result" id="phone-result"></div>
+
+            <div class="action-buttons">
+                <button onclick="showHistory('phone')">📋 Show History</button>
+                <button onclick="exportHistory('phone')">💾 Export</button>
+                <button onclick="clearHistory('phone')">🗑️ Clear All</button>
+            </div>
+
+            <div class="history-section" id="phone-history" style="display: none;"></div>
+        </div>
+
+        <!-- WiFi Recharge Calculator -->
+        <div class="calculator-section" id="wifi-section">
+            <h2 style="margin-bottom: 20px; color: #6366f1;">📶 WiFi Recharge</h2>
+            
+            <div class="form-group">
+                <label>Name/ID:</label>
+                <input type="text" id="wifi-name" placeholder="Enter name or WiFi ID">
+            </div>
+
+            <div class="form-group">
+                <label>Recharge Date:</label>
+                <div class="date-inputs">
+                    <input type="number" id="wifi-day" placeholder="Day" min="1" max="31">
+                    <input type="number" id="wifi-month" placeholder="Month" min="1" max="12">
+                    <input type="number" id="wifi-year" placeholder="Year" min="2020" max="2030">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Validity (days):</label>
+                <input type="number" id="wifi-validity" placeholder="Enter validity in days" min="1">
+            </div>
+
+            <button class="btn" onclick="calculateRecharge('wifi')">Calculate Expiry</button>
+            
+            <div class="result" id="wifi-result"></div>
+
+            <div class="action-buttons">
+                <button onclick="showHistory('wifi')">📋 Show History</button>
+                <button onclick="exportHistory('wifi')">💾 Export</button>
+                <button onclick="clearHistory('wifi')">🗑️ Clear All</button>
+            </div>
+
+            <div class="history-section" id="wifi-history" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 'age';
+
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.querySelector('.theme-toggle');
+            if (body.classList.contains('light')) {
+                body.classList.replace('light', 'dark');
+                btn.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.replace('dark', 'light');
+                btn.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.className = savedTheme;
+        document.querySelector('.theme-toggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+        // Show Section
+        function showSection(section) {
+            currentSection = section;
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.calculator-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(section + '-section').classList.add('active');
+        }
+
+        // Age Calculator
+        function calculateAge() {
+            const day = parseInt(document.getElementById('age-day').value);
+            const month = parseInt(document.getElementById('age-month').value);
+            const year = parseInt(document.getElementById('age-year').value);
+            
+            if (!day || !month || !year) {
+                alert('⚠️ Please fill all fields!');
+                return;
+            }
+
+            const birthDate = new Date(year, month - 1, day);
+            const today = new Date();
+            
+            if (birthDate > today) {
+                alert('⚠️ Birth date cannot be in the future!');
+                return;
+            }
+
+            let years = today.getFullYear() - birthDate.getFullYear();
+            let months = today.getMonth() - birthDate.getMonth();
+            let days = today.getDate() - birthDate.getDate();
+
+            if (days < 0) {
+                months--;
+                days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            const totalDays = Math.floor((today - birthDate) / (1000 * 60 * 60 * 24));
+            const nextBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+            if (nextBirthday < today) nextBirthday.setFullYear(today.getFullYear() + 1);
+            const daysToNext = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
+
+            document.getElementById('age-result').innerHTML = `
+                <h3>🎂 Your Age Details</h3>
+                <p><strong>Age:</strong> ${years} years, ${months} months, ${days} days</p>
+                <p><strong>Total Days:</strong> ${totalDays.toLocaleString()} days</p>
+                <p><strong>Next Birthday:</strong> In ${daysToNext} days (${nextBirthday.toLocaleDateString()})</p>
+            `;
+            document.getElementById('age-result').classList.add('show');
+        }
+
+        // Recharge Calculator
+        function calculateRecharge(type) {
+            const name = document.getElementById(`${type}-name`).value.trim();
+            const day = parseInt(document.getElementById(`${type}-day`).value);
+            const month = parseInt(document.getElementById(`${type}-month`).value);
+            const year = parseInt(document.getElementById(`${type}-year`).value);
+            const validity = parseInt(document.getElementById(`${type}-validity`).value);
+            
+            if (!name || !day || !month || !year || !validity) {
+                alert('⚠️ Please fill all fields!');
+                return;
+            }
+
+            const rechargeDate = new Date(year, month - 1, day);
+            const expiryDate = new Date(rechargeDate);
+            expiryDate.setDate(rechargeDate.getDate() + validity);
+            
+            const today = new Date();
+            const daysRemaining = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+            
+            let statusClass = 'days-high';
+            let statusText = 'Active ✅';
+            if (daysRemaining <= 0) {
+                statusClass = 'days-low';
+                statusText = 'Expired ❌';
+            } else if (daysRemaining <= 5) {
+                statusClass = 'days-low';
+                statusText = 'Expiring Soon ⚠️';
+            } else if (daysRemaining <= 15) {
+                statusClass = 'days-medium';
+            }
+
+            document.getElementById(`${type}-result`).innerHTML = `
+                <h3>${type === 'phone' ? '📱' : '📶'} Recharge Details</h3>
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Recharge Date:</strong> ${rechargeDate.toLocaleDateString()}</p>
+                <p><strong>Validity:</strong> ${validity} days</p>
+                <p><strong>Expiry Date:</strong> ${expiryDate.toLocaleDateString()}</p>
+                <span class="days-remaining ${statusClass}">${statusText} - ${Math.abs(daysRemaining)} days ${daysRemaining < 0 ? 'ago' : 'remaining'}</span>
+                <br><br>
+                <button class="btn" onclick="saveToHistory('${type}', '${name}', '${rechargeDate.toISOString()}', ${validity}, '${expiryDate.toISOString()}')">
+                    💾 Save to History
+                </button>
+            `;
+            document.getElementById(`${type}-result`).classList.add('show');
+        }
+
+        // Save to History
+        function saveToHistory(type, name, rechargeDate, validity, expiryDate) {
+            const history = JSON.parse(localStorage.getItem(`${type}_history`) || '[]');
+            history.unshift({
+                name,
+                rechargeDate,
+                validity,
+                expiryDate,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem(`${type}_history`, JSON.stringify(history));
+            alert('✅ Saved to history!');
+            showHistory(type);
+        }
+
+        // Show History
+        function showHistory(type) {
+            const historyDiv = document.getElementById(`${type}-history`);
+            const history = JSON.parse(localStorage.getItem(`${type}_history`) || '[]');
+            
+            if (history.length === 0) {
+                historyDiv.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p>No history yet</p>
+                    </div>
+                `;
+            } else {
+                historyDiv.innerHTML = history.map((item, index) => {
+                    const expiry = new Date(item.expiryDate);
+                    const today = new Date();
+                    const daysRemaining = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+                    
+                    let statusClass = 'days-high';
+                    if (daysRemaining <= 0) statusClass = 'days-low';
+                    else if (daysRemaining <= 5) statusClass = 'days-low';
+                    else if (daysRemaining <= 15) statusClass = 'days-medium';
+                    
+                    return `
+                        <div class="history-item">
+                            <button class="delete-btn" onclick="deleteHistoryItem('${type}', ${index})">🗑️</button>
+                            <strong>${item.name}</strong><br>
+                            <small>Recharged: ${new Date(item.rechargeDate).toLocaleDateString()}</small><br>
+                            <small>Validity: ${item.validity} days</small><br>
+                            <small>Expires: ${expiry.toLocaleDateString()}</small><br>
+                            <span class="days-remaining ${statusClass}">
+                                ${daysRemaining <= 0 ? 'Expired' : `${daysRemaining} days left`}
+                            </span>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            historyDiv.style.display = 'block';
+        }
+
+        // Delete History Item
+        function deleteHistoryItem(type, index) {
+            if (!confirm('Delete this entry?')) return;
+            const history = JSON.parse(localStorage.getItem(`${type}_history`) || '[]');
+            history.splice(index, 1);
+            localStorage.setItem(`${type}_history`, JSON.stringify(history));
+            showHistory(type);
+        }
+
+        // Export History
+        function exportHistory(type) {
+            const history = JSON.parse(localStorage.getItem(`${type}_history`) || '[]');
+            if (history.length === 0) {
+                alert('⚠️ No history to export!');
+                return;
+            }
+            const dataStr = JSON.stringify(history, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${type}_recharge_history_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            alert('✅ History exported!');
+        }
+
+        // Clear History
+        function clearHistory(type) {
+            if (!confirm('⚠️ This will delete all history. Continue?')) return;
+            localStorage.removeItem(`${type}_history`);
+            document.getElementById(`${type}-history`).style.display = 'none';
+            alert('✅ History cleared!');
+        }
+
+        // Set today's date as default for recharge calculators
+        const today = new Date();
+        ['phone', 'wifi'].forEach(type => {
+            document.getElementById(`${type}-day`).value = today.getDate();
+            document.getElementById(`${type}-month`).value = today.getMonth() + 1;
+            document.getElementById(`${type}-year`).value = today.getFullYear();
+        });
+    </script>
+</body>
+</html>

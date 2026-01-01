@@ -1,0 +1,55 @@
+{
+  "name": "All-in-One Calculator Suite",
+  "short_name": "Calculator Suite",
+  "description": "Age, Phone & WiFi Recharge Calculators in one app",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#6366f1",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "540x720",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Age Calculator",
+      "short_name": "Age",
+      "description": "Calculate your age",
+      "url": "/?calculator=age",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Phone Recharge",
+      "short_name": "Phone",
+      "description": "Track phone recharges",
+      "url": "/?calculator=phone",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "WiFi Recharge",
+      "short_name": "WiFi",
+      "description": "Track WiFi recharges",
+      "url": "/?calculator=wifi",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
